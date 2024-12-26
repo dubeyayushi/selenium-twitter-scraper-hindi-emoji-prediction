@@ -15,7 +15,7 @@ class Tweet:
         driver: WebDriver,
         actions: ActionChains,
         scrape_poster_details=False,
-        target_language='hi'
+        target_language='en'
     ) -> None:
         self.card = card
         self.error = False
@@ -94,24 +94,79 @@ class Tweet:
             self.content += content.text
 
         # Check for English characters and language detection
-        try:
-            # Skip empty content
-            if self.content.strip():
-                # Check for English characters using regex
-                if re.search('[a-zA-Z]', self.content):
-                    self.error = True
-                    return
-                
-                # Additional language detection check
-                detected_language = langdetect.detect(self.content)
-                if detected_language != self.target_language:
-                    self.error = True
-                    return
-        except (langdetect.LangDetectException, Exception):
-            # If language detection fails, we'll still keep checking for English characters
-            if re.search('[a-zA-Z]', self.content):
-                self.error = True
-                return
+        if (target_language=='hi'):
+
+            try:
+                # Skip empty content
+                if self.content.strip():
+                    # Define regex patterns for various languages
+                    language_patterns = {
+                        'ur': r'[\u0600-\u06FF]',  # Urdu (Arabic script)
+                        'es': r'[a-zA-Zñáéíóúü¡¿]',  # Spanish (basic Latin characters + specific accents)
+                        'fr': r'[a-zA-Zàâçéèêëîïôûùüÿœæ]',  # French (basic Latin + accents)
+                        'en': r'[a-zA-Z]',  # English (basic Latin characters)
+                        'pt': r'[a-zA-ZáàãâéêíóôõúçÁÀÃÂÉÊÍÓÔÕÚÇ]'
+                        # Add more languages as needed here
+                    }
+
+                    # Check if the target language has a specific regex pattern
+                    if self.target_language in language_patterns:
+                        pattern = language_patterns[self.target_language]
+                        if not re.search(pattern, self.content):  # If no match for the target language
+                            self.error = True
+                            return
+
+                    # Additional language detection check using langdetect
+                    detected_language = langdetect.detect(self.content)
+                    if detected_language != self.target_language:  # Ensure it matches the target language
+                        self.error = True
+                        return
+
+            except (langdetect.LangDetectException, Exception):
+                # If language detection fails, fallback to regex check for the target language
+                if self.target_language in language_patterns:
+                    pattern = language_patterns[self.target_language]
+                    if not re.search(pattern, self.content):  # Skip if no match for the target language
+                        self.error = True
+                        return
+
+
+        if (target_language=='en'):
+            try:
+                # Skip empty content
+                if self.content.strip():
+                    # Define regex patterns for various languages
+                    language_patterns = {
+                        'hi': r'[\u0900-\u097F]',  # Hindi (Devanagari script)
+                        'ur': r'[\u0600-\u06FF]',  # Urdu (Arabic script)
+                        'es': r'[a-zA-Zñáéíóúü¡¿]',  # Spanish (basic Latin characters + specific accents)
+                        'fr': r'[a-zA-Zàâçéèêëîïôûùüÿœæ]',  # French (basic Latin + accents)
+                        'pt': r'[a-zA-ZáàãâéêíóôõúçÁÀÃÂÉÊÍÓÔÕÚÇ]'
+                        # Add more languages as needed here
+                    }
+
+                    # Check if the target language has a specific regex pattern
+                    if self.target_language in language_patterns:
+                        pattern = language_patterns[self.target_language]
+                        if not re.search(pattern, self.content):  # If no match for the target language
+                            self.error = True
+                            return
+
+                    # Additional language detection check using langdetect
+                    detected_language = langdetect.detect(self.content)
+                    if detected_language != self.target_language:  # Ensure it matches the target language
+                        self.error = True
+                        return
+
+            except (langdetect.LangDetectException, Exception):
+                # If language detection fails, fallback to regex check for the target language
+                if self.target_language in language_patterns:
+                    pattern = language_patterns[self.target_language]
+                    if not re.search(pattern, self.content):  # Skip if no match for the target language
+                        self.error = True
+                        return
+
+
 
         try:
             self.reply_cnt = card.find_element(
