@@ -15,7 +15,7 @@ class Tweet:
         driver: WebDriver,
         actions: ActionChains,
         scrape_poster_details=False,
-        target_language='en'
+        target_language='hien'
     ) -> None:
         self.card = card
         self.error = False
@@ -166,6 +166,154 @@ class Tweet:
                         self.error = True
                         return
 
+
+
+        if target_language == 'hien':  # Hinglish logic
+            try:
+                # Skip empty content
+                if self.content.strip():
+                    # Check for any non-English characters using regex
+                    # This regex will match any character that is not a letter or space
+                    if re.search(r'[^a-zA-Z\s]', self.content):  # If any non-English character is found
+                        self.error = True
+                        return
+
+                    words_list = re.findall(r'\b\w+\b', self.content.lower())
+
+                    # Hinglish dictionary
+                    hinglish_dict = {
+                        'a' : [
+                            "aaya", "apna", "arre", "arey", "aisa", "aik", "aaiye", "aaye", "aaiyiye", 
+                            "aaja", "abhi", "aap", "aapse", "aapko", "aapke", "aata", "ajeeb", "ajib", 
+                            "aankhon", "aankhein", "aankh", "aaj", "ajj", "aasmaan", "asman", "aasman", 
+                            "aur", "aawashyakta", "awashyakta", "adhik", "aaraam", "aram", "aaram", 
+                            "araam", "accha", "acha", "achha", "acchi", "achhi", "achi", "achanak", 
+                            "aasaan", "asaan", "asan", "aasan", "aapki", "ab", "adbhut"
+                            ],
+                        'b': [
+                            "bahut", "beta", "bina", "bhai", "bolo", "bolna", "bohot", "baatein", 
+                            "bharosa", "buniyaad", "buniyad", "behtar", "behtareen", "bewkoof", 
+                            "bewkoofi", "bewakoof", "bewakoofi", "bewajah", "baaton", "baato", 
+                            "bhi", "barbaad", "barbad", "baarish", "baarishein", "barish", 
+                            "barishein", "barishon", "bhaag", "bhaago", "bhaagna", "badi", "bhim", "bheem", 
+                            "badal", "baadal", "badlaav", "badlav", "badla", "behta", "bemisaal", "besharam"
+                            "beshumar", "beshumaar"
+                            ],
+                        'c': [
+                            "chal", "chalo", "chand", "chaand", "chandni", "chandi", "chori", 
+                            "chhod", "chod", "chodo", "chhodo", "chalte", "chalti", "chalta", "chalna",
+                            "chupa", "chhupa"
+                            ],
+                        'd': [
+                            "dekha", "din", "dhoop", "dost", "dil", "dino", "dopahar", "dopaher", 
+                            "dhyaan", "dhyan", "dilli", "dafa", "dekhi", "dikhi", "dikhayi", "dikhai", 
+                            "dekho", "dekhna", "dastan", "daastan", "daastaan", "darmiyaan", "darr", 
+                            "dastak", "diya", "doobe", "doobna", "doob", "dhoop", "dosti", "dikkat", "der"
+                            ],
+                        'e': ['ek'],
+                        'f': ['farz', 'fikr', 'fikar', 'faltu', 'farsh'],
+                        'g': [
+                            "gaya", "gayi", "gadha", "gaadi", "ghadi", "ghum", "gehra", "gehraiyaan", 
+                            "ghaata", "ghoomne", "ghumna", "ghumo", "ghoomo", "ghar", "gumnaam", 
+                            "gawar", "gawaar", "gulab", "gulaabi", "gulabi", "gulaab", "gunguna", 
+                            "gungunati", "garmi", "galti", "gumnaam"
+                        ],
+                        'h': [
+                            "haan", "han", "hai", "hum", "humein", "hume", "humko", "hoti", "hota", 
+                            "hona", "humesha", "humaara", "humara", "humaari", "humari", "humse", 
+                            "humne", "haar", "husn", "hua", "hun", "hoon", "h", "hain", "haari", 
+                            "hi", "hasna", "has", "hans", "hansi", "hasi", "har", "hari"
+                        ],
+                        'i': ["ishq", "idhar", "izzat", "ijjat", "ijazat", "ijaazat"],
+                        'j': [
+                            "jisse", "jawab", "jaise", "jidhar", "jeet", "janwar", "jaanwar", 
+                            "janvar", "jaanvar", "jaan", "janam", "jaisa", "judayi", "judaayi", 
+                            "judai", "judaai", "jaadu", "jagah", "jaane", "jaana", "jo", "jal", 
+                            "jalana", "jalaana", "jab", "jawan", "jawaan", "jaon", "jao", "jaun", 
+                            "jispe", "jispar", "jaisi", "jagah", "jodi", "jaake", "jai", "jay"
+                            "jaag", "jaga", "jaldi", "jalti", "jag", "jaahir", "jaahil", "janaab", "janab", 
+                            "jinke", "jahan", "jahaan"
+                        ],
+                        'k': [
+                            "kabhi", "kaise", "kidhar", "khud", "khayal", "khayalon", "khwab", "khwaab", 
+                            "kya", "kyun", "kyu", "kab", "kaash", "kash", "kagaz", "kabhie", "kis", 
+                            "kahani", "kahaani", "kissa", "kisse", "khushi", "kinaare", "kinare", 
+                            "khaali", "khali", "kahin", "kahi", "kahan", "kaha", "kaho", "khushbu", 
+                            "khushboo", "khatam", "kinare", "kinaare", "kasam", "keh", "kehna", 
+                            "khidki", "kapde", "kapdon", "ki", "kam", "kaam", "koi", "koyi", "kuch", 
+                            "kuchh", "karo", "kar", "karna", "kr", "ka", "khuda"
+                        ],
+                        'l': [
+                            "lagta", "liye", "laaye", "laana", "lelo", "lafzon", "laut", "lega", 
+                            "legi", "lena", "lao", "log"
+                        ],
+                        'm': [
+                            "magar", "mai", "main", "matlab", "mujhe", "mujhse", "mohabbat", "mohabat", 
+                            "mein", "maze", "mazze", "maje", "mauj", "masti", "mahaul", "maahaul", 
+                            "mera", "mere", "merre", "maine", "mene", "meine", "meri", "milan", 
+                            "mehek", "mehak", "madhur", "maafi", "maaf", "maan", "mana", "meherbaan", 
+                            "meherbaani", "meherbani", "maalum", "malum", "mushkil", "musafir", 
+                            "mahila", "mitron", "masoom", "masum", "mausam", "mahadev", "mar", "maar",
+                            "marke", "maarke", "maarna", "marna", "museebat", "musibat"
+                        ],
+                        'n': ["nahi", "nahana", "nahaana", "namak", "na", "naseeb", "nazar", "nazariya", "naam", 
+                              "namah", "nazrein"
+                              ],
+                        'p': [
+                            "pati", "patni", "pata", "pawan", "paisa", "paise", "pyar", "pyaar", 
+                            "prayas", "puraani", "purani", "pukaare", "pukaar", "pukar", "pukare", 
+                            "pakore", "phool", "pehle", "pehli", "pehla", "phir", "prem", "par", 
+                            "pe", "parvat", "paani"
+                        ],
+                        'o': ["om"],
+                        'r': [
+                            "raat", "raha", "raah", "rehna", "rehne", "rahogi", "rahoge", "ruko", 
+                            "rukna", "raasta", "rasta", "rabba", "rehti", "roko", "rona", "ro", 
+                            "rakh", "rakhi", "rakhna", "ram"
+                        ],
+                        's': [
+                            "sab", "sabhi", "sapna", "samajh", "shayad", "shakal", "shaam", "sham", 
+                            "savera", "shuddh", "sawali", "silsila", "sawal", "sawaal", "suno", 
+                            "suna", "soona", "safar", "subah", "subha", "saathi", "sathi", "saath", 
+                            "shukr", "shukriya", "shukrana", "shukraana", "shukar", "shakkar", 
+                            "saari", "surile", "sureele", "swapna", "sagar", "sajna", "shuru", 
+                            "samne", "saamne", "soch", "socha", "sochna", "sakhi", "shayar", 
+                            "shaayar", "shayari", "shaayari", "sardi", "se", "sahi", "shree", "shri", "shivaay", 
+                            "shivay", "sampurana", "sampurna", "shyam", "shyaam", "socho", "suhana", "suhaana", 
+                            "sawaalon", "sabr"
+                        ],
+                        't': [
+                            "thoda", "thodi", "tujhe", "tum", "tumhein", "tumhe", "tumko", "tarah", 
+                            "tere", "tera", "terre", "tanhayi", "tanhaayi", "tanhayee", "toofan", 
+                            "toofani", "tumhari", "tumhaari", "tumse", "tumhare", "tumhaari", 
+                            "teri", "tayyar", "tayyaar", "tayyari", "tayyaari", "tamasha", 
+                            "tamaasha", "todo", "todna", "tabhi", "tadap", "tha", "thi", 
+                            "tasveer", "tujh", "tujhpe", "tujhko", "tabah"
+                        ],
+                        'v': ["vaayu", "varna", "vaise", "vo"],
+                        'w': ["waqt", "waise", "waisa", "waisi", "warna", "wahi", "wohi", "wo", "wahan", "waha", "wah"],
+                        'y': ["yr", "yar", "yaar", "yaraana", "yarana", "yaad", "yaadein", "yaadon", 
+                              "yaari", "yaariyan", "yaado", "yeh", "yahi", "yahin", "ya", "yun"
+                              ],
+                        'z': ["zindagi", "zeher", "zara", "zarra", "zanjeer", "zehnaseeb", "zarurat", "zaroorat", 
+                              "zariya", "zyada", "zyaada", "zid", "zidd"
+                              ],
+                    }
+
+                    # Flatten the dictionary into a single list of Hinglish words
+                    hinglish_words = [word for sublist in hinglish_dict.values() for word in sublist]
+
+                    # Count the number of matching Hinglish words in the tweet
+                    matching_words = [word for word in words_list if word in hinglish_words]
+
+                    if len(matching_words) < 1:  # Require at least 1 Hinglish words
+                        self.error = True
+                        return
+
+            except Exception as e:
+                self.error = True
+                print(f"Error processing Hinglish tweet: {e}")
+                return
 
 
         try:

@@ -468,7 +468,7 @@ It may be due to the following:
                                 actions=self.actions,
                                 scrape_poster_details=self.scraper_details[
                                     "poster_details"
-                                ],
+                                ]
                             )
 
                             if tweet:

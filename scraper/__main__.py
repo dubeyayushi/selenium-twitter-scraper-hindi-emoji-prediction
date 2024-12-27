@@ -150,7 +150,7 @@ def main():
             "--language",
             type=str,
             default="en",  # Default to English if not provided
-            help="Language of tweets to scrape (default: en). Use 'hi' for Hindi, 'en' for English, etc.",
+            help="Language of tweets to scrape (default: en). Use 'hi' for Hindi, 'en' for English, 'hien' for Hinglish etc.",
         )
 
         args = parser.parse_args()
